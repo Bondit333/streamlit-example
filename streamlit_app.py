@@ -5,6 +5,7 @@ import os
 
 def process_form_data(name, username, college, images):
 
+    MONGO_URI = os.environ.get('MONGO_URI')
     client = MongoClient(MONGO_URI)
     db = client['Posts']
     collection = db['PendingPosts']
