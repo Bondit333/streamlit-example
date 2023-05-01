@@ -1,5 +1,4 @@
-altair
-pandas
-streamlit
-pymongo
-bson
+streamlit==0.89.0
+pymongo==3.12.1
+dnspython==2.2.0
+
