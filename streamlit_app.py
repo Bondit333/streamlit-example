@@ -28,7 +28,7 @@ def process_form_data(name, username, college, images):
 def main():
     st.title("College Post Submission")
 
-    colleges = ["college1", "argmin"]
+    colleges = ["college1", "college2", "college3"]
 
     name = st.text_input("Name")
     username = st.text_input("Username")
