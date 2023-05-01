@@ -1,38 +1,46 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
 import streamlit as st
+from pymongo import MongoClient
+from bson.binary import Binary
+import os
 
-"""
-# Welcome to Streamlit!
+def process_form_data(name, username, college, images):
+    MONGO_URI = "mongodb+srv://bonditcommunities:4vvwgomYBtMSkwkE@cluster0.rrr56f3.mongodb.net/?retryWrites=true&w=majority"
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+    client = MongoClient(MONGO_URI)
+    db = client['Posts']
+    collection = db['PendingPosts']
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+    image_binaries = []
+    for image in images:
+        if image.name.endswith(('.png', '.jpg', '.jpeg')):
+            image_binary = Binary(image.read())
+            image_binaries.append(image_binary)
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+    document = {
+        "name": name,
+        "username": username,
+        "college": college,
+        "images": image_binaries
+    }
 
+    collection.insert_one(document)
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+def main():
+    st.title("College Post Submission")
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+    colleges = ["college1", "argmin"]
 
-    points_per_turn = total_points / num_turns
+    name = st.text_input("Name")
+    username = st.text_input("Username")
+    college = st.selectbox("Select your college", options=colleges)
+    images = st.file_uploader("Upload images", type=['png', 'jpg', 'jpeg'], accept_multiple_files=True)
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+    if st.button("Submit"):
+        if name and username and college and images:
+            process_form_data(name, username, college, images)
+            st.success("Form submitted successfully!")
+        else:
+            st.error("Please fill in all the fields and upload at least one image.")
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+if __name__ == "__main__":
+    main()
