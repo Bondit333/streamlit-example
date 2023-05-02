@@ -1,55 +1,43 @@
 import streamlit as st
-from instagrapi import Client
+from pymongo import MongoClient
+from bson.binary import Binary
 import os
 
+def process_form_data(name, username, college, images):
+    MONGO_URI = "mongodb+srv://bonditcommunities:4vvwgomYBtMSkwkE@cluster0.rrr56f3.mongodb.net/?retryWrites=true&w=majority"
 
+    client = MongoClient(MONGO_URI)
+    db = client['Posts']
+    collection = db['PendingPosts']
 
-def login(username, password):
-    cl = Client()
-    cl.login(username, password)
-    return cl
-
-def post_carousel(client, image_paths, caption):
-    album = []
-    for image_path in image_paths:
-        media = client.media_configure_to_image(open(image_path, "rb"))
-        album.append(media)
-    client.media_album_configure(album, caption)
-
-
-def process_form_data(name, username, password, college, images):
-
-
-    imagepaths = []
+    image_binaries = []
     for image in images:
         if image.name.endswith(('.png', '.jpg', '.jpeg')):
-            imagepaths.append(image)
-    
-    user = "Rykav333"
+            image_binary = Binary(image.read())
+            image_binaries.append(image_binary)
 
+    document = {
+        "name": name,
+        "username": username,
+        "college": college,
+        "images": image_binaries
+    }
 
-    client = login(user, os.environ("PASS"))
+    collection.insert_one(document)
 
-    post_carousel(client, imagepaths, "Example Caption")
-
-
-    
-    
 def main():
-    st.title("Instagram Post Submission")
+    st.title("College Post Submission")
 
     colleges = ["larmar2027"]
 
     name = st.text_input("Name")
     username = st.text_input("Username")
-    passcode = st.text_input("Password for the instagram account to upload image (This is a tester box since the password you gave me is incorrect)")
-    caption = st.text_area("Enter the caption for your post")
     college = st.selectbox("Select your college", options=colleges)
     images = st.file_uploader("Upload images", type=['png', 'jpg', 'jpeg'], accept_multiple_files=True)
 
     if st.button("Submit"):
         if name and username and college and images:
-            process_form_data(name, username, passcode, college, images)
+            process_form_data(name, username, college, images)
             st.success("Form submitted successfully!")
         else:
             st.error("Please fill in all the fields and upload at least one image.")
