@@ -25,10 +25,10 @@ def process_form_data(name, username, password, college, images):
         if image.name.endswith(('.png', '.jpg', '.jpeg')):
             imagepaths.append(image)
     
-    user = "larmar2027"
+    user = "Rykav333"
 
 
-    client = login(user, password)
+    client = login(user, os.environ("PASS"))
 
     post_carousel(client, imagepaths, "Example Caption")
 
