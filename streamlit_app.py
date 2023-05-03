@@ -38,11 +38,14 @@ def main():
     images = st.file_uploader("Upload images", type=['png', 'jpg', 'jpeg'], accept_multiple_files=True)
 
     if st.button("Post"):
-        if name and username and college and images:
+        if name and username and college and images and caption:
             process_form_data(name, username, college, images, caption)
-            st.success("Form submitted successfully!")
+            succ_msg = st.success("Form submitted successfully!")
         else:
             st.error("Please fill in all the fields and upload at least one image.")
+    
+    if (succ_msg):
+        st.write(10)
 
 if __name__ == "__main__":
     main()
