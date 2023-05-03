@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson.binary import Binary
 import os
 
-def process_form_data(name, username, college, images):
+def process_form_data(name, username, college, images, caption):
     MONGO_URI = "mongodb+srv://bonditcommunities:4vvwgomYBtMSkwkE@cluster0.rrr56f3.mongodb.net/?retryWrites=true&w=majority"
 
     client = MongoClient(MONGO_URI)
@@ -20,6 +20,7 @@ def process_form_data(name, username, college, images):
         "name": name,
         "username": username,
         "college": college,
+        "caption": caption,
         "images": image_binaries
     }
 
@@ -33,11 +34,12 @@ def main():
     name = st.text_input("Name")
     username = st.text_input("Username")
     college = st.selectbox("Select your college", options=colleges)
+    caption = st.text_area("Post caption")
     images = st.file_uploader("Upload images", type=['png', 'jpg', 'jpeg'], accept_multiple_files=True)
 
-    if st.button("Submit"):
+    if st.button("Post"):
         if name and username and college and images:
-            process_form_data(name, username, college, images)
+            process_form_data(name, username, college, images, caption)
             st.success("Form submitted successfully!")
         else:
             st.error("Please fill in all the fields and upload at least one image.")
