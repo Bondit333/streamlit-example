@@ -4,7 +4,7 @@ from bson.binary import Binary
 import os
 
 def process_form_data(name, username, grad_year, college, images, caption, verification_email, verification_acceptance_letter):
-    MONGO_URI = os.getenv("MONGO_URI")
+    MONGO_URI = st.secrets["MONGO_URI"]
 
     client = MongoClient(MONGO_URI)
     db = client['Posts']
